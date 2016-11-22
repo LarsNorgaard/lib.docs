@@ -41,6 +41,28 @@ System images with vanilla kernel
 - [I2C](http://en.wikipedia.org/wiki/I%C2%B2C) ready and tested with small 16×2 LCD. Basic i2c tools included.
 - Onboard LED attached to SD card activity (not enabled on all boards yet)
 
+### SATA Multiplier Support##
+Most A20 boards support SATA PMP modules that allows you to connect more than one sata drive.
+
+- Before you dive in, be sure to check if the PMP you are using is support.
+- Most  JMB 321 port multipliers are supported
+- If you're on a legacy kernel you should rebuild it like shown [*here*](http://www.htpcguides.com/rebuild-bananian-kernel-with-sata-port-multiplier-support/)
+- If you're on 4.X kernel follow this guide.
+
+To check if PMP is enabled in the kernel run this command:
+`zgrep CONFIG_AHCI_SUNXI /proc/config.gz`
+
+You should see `CONFIG_AHCI_SUNXI=y` as output. *If it doesn't show anything then you will most likely have to rebuild/build the kernel with Sata PMP enabled.*
+
+`nano /boot/boot.cmd`
+
+Go to line that starts with `setenv bootargs` and add `ahci_sunxi.enable_pmp=1` to the end of the line before `"`
+
+Recompile your boot script with `mkimage -C none -A arm -T script -d /boot/boot.cmd /boot/boot.scr`
+
+Reboot and check if your disks are detected by running `lsblk`
+
+
 ### Bugs or limitation ###
 
 - No HW acceleration for desktop and video decoding
